@@ -93,17 +93,35 @@ public class Compiler {
 		return null;
 	}
 
+
 	public void defineVariables(Scope scope, List<String> names, Function<String,? extends VariableSymbol> getter) {
+		if ( names!=null ) {
+			for (String name : names) {
+				VariableSymbol v = getter.apply(name);
+				if ( scope.getSymbol(v.getName())!=null ) {
+					error("redefinition of "+v.getName()+" in "+scope.toQualifierString(">>"));
+				}
+				else {
+					scope.define(v);
+				}
+			}
+		}
 	}
 
-	public void defineFields(Scope scope, List<String> names) {
+//	public void defineFields(Scope scope, List<String> names) {
+<<<<<<< HEAD
 
+=======
+		defineVariables(scope, names, n -> new STField(n));
+>>>>>>> 15de60656737e1aeabfeb5844f7e48718a29a810
 	}
 
 	public void defineArguments(Scope scope, List<String> names) {
+		defineVariables(scope, names, n -> new STArg(n));
 	}
 
 	public void defineLocals(Scope scope, List<String> names) {
+		defineVariables(scope, names, n -> new STVariable(n));
 	}
 
 	// Convenience methods for code gen
