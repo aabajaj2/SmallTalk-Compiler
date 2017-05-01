@@ -109,7 +109,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
 	@Override
 	public void enterSmalltalkMethodBlock(SmalltalkParser.SmalltalkMethodBlockContext ctx) {
 		SmalltalkParser.MethodContext methodNode =
-			(SmalltalkParser.MethodContext) Utils.getAncestor(ctx, SmalltalkParser.RULE_method);
+				(SmalltalkParser.MethodContext) Utils.getAncestor(ctx, SmalltalkParser.RULE_method);
 		Symbol existingSymbol = currentScope.getSymbol(ctx.selector);
 		if ( existingSymbol!=null ) {
 			compiler.error("redefinition of method "+ctx.selector+" in "+currentScope.toQualifierString(">>"));
@@ -134,8 +134,8 @@ public class DefineSymbols extends SmalltalkBaseListener {
 		String primitiveName = ctx.SYMBOL().getText();
 		primitiveName = primitiveName.substring(1); // Strip # from #Foo
 		STMethod m =
-			compiler.createPrimitiveMethod((STClass) currentScope, ctx.selector, primitiveName,
-										   methodNode);
+				compiler.createPrimitiveMethod((STClass) currentScope, ctx.selector, primitiveName,
+						methodNode);
 		currentScope.define(m);
 		compiler.defineArguments(m, ctx.args);
 		methodNode.scope = m;
@@ -146,7 +146,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
 	@Override
 	public void exitSmalltalkMethodBlock(SmalltalkParser.SmalltalkMethodBlockContext ctx) {
 		SmalltalkParser.MethodContext methodNode =
-			(SmalltalkParser.MethodContext) Utils.getAncestor(ctx, SmalltalkParser.RULE_method);
+				(SmalltalkParser.MethodContext) Utils.getAncestor(ctx, SmalltalkParser.RULE_method);
 		if ( methodNode.scope != null ) {
 			popScope(); // pop out of method scope
 		}

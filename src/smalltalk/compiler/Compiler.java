@@ -108,12 +108,8 @@ public class Compiler {
 		}
 	}
 
-//	public void defineFields(Scope scope, List<String> names) {
-<<<<<<< HEAD
-
-=======
+	public void defineFields(Scope scope, List<String> names) {
 		defineVariables(scope, names, n -> new STField(n));
->>>>>>> 15de60656737e1aeabfeb5844f7e48718a29a810
 	}
 
 	public void defineArguments(Scope scope, List<String> names) {
