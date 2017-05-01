@@ -97,6 +97,7 @@ public class Compiler {
 	}
 
 	public void defineFields(Scope scope, List<String> names) {
+
 	}
 
 	public void defineArguments(Scope scope, List<String> names) {
