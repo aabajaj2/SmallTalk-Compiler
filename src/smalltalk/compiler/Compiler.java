@@ -1,6 +1,7 @@
 package smalltalk.compiler;
 
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
 import org.antlr.symtab.VariableSymbol;
 import org.antlr.v4.codegen.*;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -8,6 +9,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import smalltalk.compiler.misc.Utils;
 import smalltalk.compiler.symbols.STArg;
 import smalltalk.compiler.symbols.STBlock;
 import smalltalk.compiler.symbols.STClass;
@@ -21,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+
+import static smalltalk.compiler.misc.Utils.intToBytes;
+import static smalltalk.compiler.misc.Utils.shortToBytes;
+import static smalltalk.compiler.misc.Utils.toLiteral;
 
 public class Compiler {
 	protected STSymbolTable symtab;
@@ -134,10 +140,16 @@ public class Compiler {
 
 	public static Code push_nil() 				{ return Code.of(Bytecode.NIL); }
 	public static Code push_self()				{ return Code.of(Bytecode.SELF); }
+	public static Code push_true()				{ return Code.of(Bytecode.TRUE); }
+	public static Code push_false()				{ return Code.of(Bytecode.FALSE); }
+
 	public static Code method_return()          { return Code.of(Bytecode.RETURN); }
 
-	public static Code push_global(int gindex)          { return Code.of(Bytecode.PUSH_GLOBAL); }
-	public static Code push_literal(int lindex)          { return Code.of(Bytecode.PUSH_LITERAL); }
+	public static Code push_global(int gindex) { return Code.of(Bytecode.PUSH_GLOBAL).join(toLiteral(gindex)); }
+	public static Code push_literal(int lindex) { return Code.of(Bytecode.PUSH_LITERAL).join(toLiteral(lindex)); }
+	public static Code send(int nargs, int lindex) { return Code.of(Bytecode.SEND).join(toLiteral(nargs)).join(toLiteral(lindex)); }
+	public static Code block(int blockDescriptorIndex) { return Code.of(Bytecode.BLOCK).join(toLiteral(blockDescriptorIndex)); }
+	public static Code push_local(short scope, short index ) { return Code.of(Bytecode.PUSH_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;
