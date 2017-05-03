@@ -39,7 +39,7 @@ public class DefineSymbols extends SmalltalkBaseListener {
 			for (TerminalNode varNode : instanceVarNodes) {
 				instanceVars.add(varNode.getText());
 			}
-//			System.out.println("\tinstance vars: "+instanceVars);
+			System.out.println("\tinstance vars: "+instanceVars);
 		}
 		if ( currentScope.getSymbol(className)!=null || className.equals("MainClass") ) {
 			compiler.error("redefinition of "+className);

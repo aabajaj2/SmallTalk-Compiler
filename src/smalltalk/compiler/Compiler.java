@@ -2,6 +2,8 @@ package smalltalk.compiler;
 
 import org.antlr.symtab.Scope;
 import org.antlr.symtab.VariableSymbol;
+import org.antlr.v4.codegen.*;
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -39,7 +41,15 @@ public class Compiler {
 	}
 
 	public STSymbolTable compile(String fileName, String input) {
+		ParserRuleContext tree = parseClasses(new ANTLRInputStream(input));
+		if(tree != null){
+			defSymbols(tree);
+			resolveSymbols(tree);
+		}
+		CodeGenerator codeGenerator = new CodeGenerator(this);
+		codeGenerator.visit(tree);
 		return symtab;
+
 	}
 
 	/** Parse classes and/or a chunk of code, returning AST root.
@@ -125,6 +135,9 @@ public class Compiler {
 	public static Code push_nil() 				{ return Code.of(Bytecode.NIL); }
 	public static Code push_self()				{ return Code.of(Bytecode.SELF); }
 	public static Code method_return()          { return Code.of(Bytecode.RETURN); }
+
+	public static Code push_global(int gindex)          { return Code.of(Bytecode.PUSH_GLOBAL); }
+	public static Code push_literal(int lindex)          { return Code.of(Bytecode.PUSH_LITERAL); }
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;
