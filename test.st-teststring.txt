@@ -1,0 +1,9 @@
+name: MainClass
+superClass: 
+fields: 
+literals: 'show:'
+methods:
+    name: main
+    qualifiedName: MainClass>>main
+    nargs: 0
+    nlocals: 0

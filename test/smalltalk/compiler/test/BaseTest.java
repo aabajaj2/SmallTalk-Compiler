@@ -9,8 +9,6 @@ import smalltalk.compiler.Compiler;
 import smalltalk.compiler.STC;
 import smalltalk.compiler.symbols.STClass;
 import smalltalk.compiler.symbols.STSymbolTable;
-import smalltalk.vm.VirtualMachine;
-import smalltalk.vm.primitive.STObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
 
 public class BaseTest {
 	public GlobalScope parseAndGetGlobalScope(String input) {
