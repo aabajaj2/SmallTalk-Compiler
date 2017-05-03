@@ -138,6 +138,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     @Override
     public Code visitLiteral(SmalltalkParser.LiteralContext ctx) {
         Code code = defaultResult();
+
         return code;
     }
 
@@ -166,7 +167,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
 	public int getLiteralIndex(String s) {
-		return 0;
+        return currentClassScope.stringTable.add(s);
 	}
 
 	public Code dbgAtEndMain(Token t) {
