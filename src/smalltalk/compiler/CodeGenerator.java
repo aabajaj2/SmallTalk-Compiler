@@ -85,11 +85,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 //        ctx.scope.compiledBlock.blocks[0] = stCompiledBlock;
 //        List<ParseTree> blocks = Trees.(ctx);
 //        System.out.println("Blocks="+blocks.size());
+        int i = 0;
         List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
         stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for(int i=0; i<blocks.size(); i++){
-            stCompiledBlock.blocks[i] =  new STCompiledBlock(ctx.classScope, (STBlock) blocks.get(i));
+        for(Scope b : blocks){
+            STCompiledBlock stCompiledBlock1 = new STCompiledBlock(ctx.classScope, (STBlock) b);
+            stCompiledBlock.blocks[i] = stCompiledBlock1;
+            stCompiledBlock.blocks[i].bytecode = ((STBlock) b).compiledBlock.bytecode;
+            i++;
         }
+//        for(int i=0; i<blocks.size(); i++){
+//            stCompiledBlock.blocks[i] =  new STCompiledBlock(ctx.classScope, (STBlock) blocks.get(i));
+//            stCompiledBlock.blocks[i].bytecode = code.bytes();
+//        }
         System.out.println("List of scopes= "+blocks.size());
         code = aggregateResult(code, Code.of(Bytecode.POP));
         code = aggregateResult(code, Code.of(Bytecode.SELF));
@@ -135,12 +143,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         Code code = defaultResult();
         for (SmalltalkParser.StatContext statContext : ctx.stat()) {
             Code c = visit(statContext);
-            code = aggregateResult(c, code);
-        }
-        if(ctx.localVars()!=null){
-            Code c = visit(ctx.localVars());
             code = aggregateResult(code, c);
         }
+//        if(ctx.localVars()!=null){
+//            Code c = visit(ctx.localVars());
+//            code = aggregateResult(code, c);
+//        }
         return code;
     }
 
@@ -173,7 +181,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitEmptyBody(SmalltalkParser.EmptyBodyContext ctx) {
-        Code code = defaultResult();
+        Code code = Compiler.push_nil();
         return code;
     }
 
@@ -186,7 +194,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, stBlock);
 		ctx.scope.compiledBlock = stCompiledBlock;
         Code codeblock = visit(ctx.body());
-        System.out.println("Body = "+ctx.body().getText());
+        aggregateResult(codeblock, Compiler.block_return());
         ctx.scope.compiledBlock.bytecode = codeblock.bytes();
         popScope();
         return code;
@@ -194,12 +202,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitLiteral(SmalltalkParser.LiteralContext ctx) {
-        Code code;
+        Code code = defaultResult();
         String stringc = ctx.getText();
         if(stringc.contains("\'")) {
             stringc = stringc.replace("\'","");
         }
-        if(ctx.STRING()!=null) {
+        if(ctx.STRING()!= null) {
              code = Compiler.push_literal(getLiteralIndex(stringc));
         } else if(ctx.getText().equals("true")){
             code = Compiler.push_true();
@@ -207,10 +215,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             code = Compiler.push_self();
         } else if(ctx.getText().equals("false")){
             code = Compiler.push_false();
-        } else {
+        } else if (ctx.getText().equals("nil")){
             code = Compiler.push_nil();
         }
+
+        if(ctx.NUMBER() != null ){
+            code = Compiler.push_int(Integer.parseInt(ctx.NUMBER().getText()));
+        }
         return code;
+    }
+
+    @Override
+    public Code visitSendMessage(SmalltalkParser.SendMessageContext ctx) {
+        return visit(ctx.messageExpression());
     }
 
     public STCompiledBlock getCompiledPrimitive(STPrimitiveMethod primitive) {
@@ -221,9 +238,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	@Override
  	public Code visitReturn(SmalltalkParser.ReturnContext ctx) {
 		Code e = visit(ctx.messageExpression());
-		if ( compiler.genDbg ) {
-			e = Code.join(e, dbg(ctx.start)); // put dbg after expression as that is when it executes
-		}
+//		if ( compiler.genDbg ) {
+//			e = Code.join(e, dbg(ctx.start)); // put dbg after expression as that is when it executes
+//		}
 		Code code = e.join(Compiler.method_return());
 		return code;
 	}

@@ -151,6 +151,8 @@ public class Compiler {
 	public static Code block(int blockDescriptorIndex) { return Code.of(Bytecode.BLOCK).join(toLiteral(blockDescriptorIndex)); }
 	public static Code push_local(short scope, int index ) { return Code.of(Bytecode.PUSH_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
 	public static Code store_local(short scope, int index ) { return Code.of(Bytecode.STORE_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
+	public static Code block_return() { return Code.of(Bytecode.BLOCK_RETURN); }
+	public static Code push_int(int i) { return Code.of(Bytecode.PUSH_INT).join(intToBytes(i)); }
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;
