@@ -110,8 +110,49 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         aggregateResult(codeOfMethod, Compiler.push_self());
         aggregateResult(codeOfMethod, Compiler.method_return());
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
-//        aggregateResult(code, visit(ctx.methodBlock()));
         popScope();
+        return code;
+    }
+
+    @Override
+    public Code visitOperatorMethod(SmalltalkParser.OperatorMethodContext ctx) {
+        Code code = defaultResult();
+        currentScope = ctx.scope;
+        pushScope(ctx.scope);
+        STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
+        ctx.scope.compiledBlock = stCompiledBlock;
+        ctx.scope.compiledBlock.bytecode = code.bytes();
+        Code codeOfMethod = visit(ctx.methodBlock());
+        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
+        aggregateResult(codeOfMethod, Compiler.push_self());
+        aggregateResult(codeOfMethod, Compiler.method_return());
+        ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
+        popScope();
+        return code;
+    }
+
+    @Override
+    public Code visitKeywordMethod(SmalltalkParser.KeywordMethodContext ctx) {
+        Code code = defaultResult();
+        currentScope = ctx.scope;
+        pushScope(ctx.scope);
+        STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
+        ctx.scope.compiledBlock = stCompiledBlock;
+        ctx.scope.compiledBlock.bytecode = code.bytes();
+        Code codeOfMethod = visit(ctx.methodBlock());
+        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
+        aggregateResult(codeOfMethod, Compiler.push_self());
+        aggregateResult(codeOfMethod, Compiler.method_return());
+        ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
+        popScope();
+        return code;
+    }
+
+    @Override
+    public Code visitPrimitiveMethodBlock(SmalltalkParser.PrimitiveMethodBlockContext ctx) {
+        Code code = defaultResult();
+        aggregateResult(code, visit(ctx.SYMBOL()));
+        System.out.println("SYmbol from primitive = "+ctx.SYMBOL().getText());
         return code;
     }
 
@@ -121,7 +162,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         for(SmalltalkParser.BinaryExpressionContext e :	 ctx.args){
             code = aggregateResult(code,visit(e));
         }
-        StringBuilder keywords = new StringBuilder();//ctx.KEYWORD(0).getText();
+        StringBuilder keywords = new StringBuilder();
         for(int i = 0; i<ctx.KEYWORD().size(); i++){
             keywords.append(ctx.KEYWORD(i).getText());
         }
@@ -158,10 +199,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             Code c = visit(statContext);
             code = aggregateResult(code, c);
         }
-//        if(ctx.localVars()!=null){
-//            Code c = visit(ctx.localVars());
-//            code = aggregateResult(code, c);
-//        }
         return code;
     }
 
