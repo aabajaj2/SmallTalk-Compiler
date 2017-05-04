@@ -74,38 +74,46 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		currentClassScope = ctx.classScope;
 		pushScope(ctx.scope);
 		Code code = visitChildren(ctx);
-		STCompiledBlock stCompiledBlock = new STCompiledBlock(ctx.classScope, (STBlock) currentScope);
-		ctx.scope.compiledBlock = stCompiledBlock;
-        //Somehow we need to link the block and compileblocks with stcompliedblock.blocks?? -Find all desecdents
-//        List<STCompiledBlock> stCompiledBlockList = new ArrayList<>();
-//        for(int i=0; i<stCompiledBlock.blocks.length; i++){
-//            stCompiledBlockList.add(new STCompiledBlock(ctx.classScope, (STBlock)currentScope));
-//        }
-//        System.out.println("BLOCKS-"+ctx.scope.compiledBlock.blocks);
-//        ctx.scope.compiledBlock.blocks[0] = stCompiledBlock;
-//        List<ParseTree> blocks = Trees.(ctx);
-//        System.out.println("Blocks="+blocks.size());
-        int i = 0;
-        List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
-        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for(Scope b : blocks){
-            STCompiledBlock stCompiledBlock1 = new STCompiledBlock(ctx.classScope, (STBlock) b);
-            stCompiledBlock.blocks[i] = stCompiledBlock1;
-            stCompiledBlock.blocks[i].bytecode = ((STBlock) b).compiledBlock.bytecode;
-            i++;
+
+        if(currentClassScope != null) {
+            STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STBlock) currentScope);
+            ctx.scope.compiledBlock = stCompiledBlock;
+            int i = 0;
+            List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
+            stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
+            for (Scope b : blocks) {
+                STCompiledBlock stCompiledBlock1 = new STCompiledBlock(ctx.classScope, (STBlock) b);
+                stCompiledBlock.blocks[i] = stCompiledBlock1;
+                stCompiledBlock.blocks[i].bytecode = ((STBlock) b).compiledBlock.bytecode;
+                i++;
+            }
+
+            code = aggregateResult(code, Code.of(Bytecode.POP));
+            code = aggregateResult(code, Code.of(Bytecode.SELF));
+            code = aggregateResult(code, Code.of(Bytecode.RETURN));
+            ctx.scope.compiledBlock.bytecode = code.bytes();
+            popScope();
         }
-//        for(int i=0; i<blocks.size(); i++){
-//            stCompiledBlock.blocks[i] =  new STCompiledBlock(ctx.classScope, (STBlock) blocks.get(i));
-//            stCompiledBlock.blocks[i].bytecode = code.bytes();
-//        }
-        System.out.println("List of scopes= "+blocks.size());
-        code = aggregateResult(code, Code.of(Bytecode.POP));
-        code = aggregateResult(code, Code.of(Bytecode.SELF));
-        code = aggregateResult(code, Code.of(Bytecode.RETURN));
-        ctx.scope.compiledBlock.bytecode = code.bytes();
-		popScope();
-		return code;
+        return code;
 	}
+
+    @Override
+    public Code visitNamedMethod(SmalltalkParser.NamedMethodContext ctx) {
+        Code code = defaultResult();
+        currentScope = ctx.scope;
+        pushScope(ctx.scope);
+        STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
+        ctx.scope.compiledBlock = stCompiledBlock;
+        ctx.scope.compiledBlock.bytecode = code.bytes();
+        Code codeOfMethod = visit(ctx.methodBlock());
+        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
+        aggregateResult(codeOfMethod, Compiler.push_self());
+        aggregateResult(codeOfMethod, Compiler.method_return());
+        ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
+//        aggregateResult(code, visit(ctx.methodBlock()));
+        popScope();
+        return code;
+    }
 
     @Override
     public Code visitKeywordSend(SmalltalkParser.KeywordSendContext ctx) {
@@ -113,7 +121,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         for(SmalltalkParser.BinaryExpressionContext e :	 ctx.args){
             code = aggregateResult(code,visit(e));
         }
-        code = aggregateResult(code, Compiler.send(ctx.args.size(),getLiteralIndex(ctx.KEYWORD(0).getText())));
+        StringBuilder keywords = new StringBuilder();//ctx.KEYWORD(0).getText();
+        for(int i = 0; i<ctx.KEYWORD().size(); i++){
+            keywords.append(ctx.KEYWORD(i).getText());
+        }
+        code = aggregateResult(code, Compiler.send(ctx.args.size(), getLiteralIndex(keywords.toString())));
+
         return code;
     }
 
@@ -161,20 +174,25 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitLvalue(SmalltalkParser.LvalueContext ctx) {
-        VariableSymbol variableSymbol = ctx.sym;
-        Code code = compiler.store_local((short) 0, variableSymbol.getInsertionOrderNumber());
+        Code code;
+        if(ctx.sym instanceof STField) {
+            code = compiler.store_field(ctx.sym.getInsertionOrderNumber());
+        } else {
+            code = compiler.store_local((short) 0,ctx.sym.getInsertionOrderNumber());
+        }
+
         return code;
     }
 
     @Override
     public Code visitId(SmalltalkParser.IdContext ctx) {
         Code code;
-        if(ctx.sym == null) {
-            code = Compiler.push_global(getLiteralIndex(ctx.ID().getText()));
+        if(ctx.sym instanceof VariableSymbol) {
+            code = compiler.push_local((short) 0,ctx.sym.getInsertionOrderNumber());
+        } else if (ctx.sym instanceof STField){
+            code = compiler.push_field(ctx.sym.getInsertionOrderNumber());
         } else {
-            Symbol s = ctx.sym;
-			// Need to tackle the symbol using push_local
-            code = compiler.push_local((short) 0,s.getInsertionOrderNumber());
+            code = Compiler.push_global(getLiteralIndex(ctx.ID().getText()));
         }
         return code;
     }
@@ -193,9 +211,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 		code = aggregateResult(code, Compiler.block(stBlock.index));
 		STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, stBlock);
 		ctx.scope.compiledBlock = stCompiledBlock;
-        Code codeblock = visit(ctx.body());
-        aggregateResult(codeblock, Compiler.block_return());
-        ctx.scope.compiledBlock.bytecode = codeblock.bytes();
+        Code codeOfBlock = visit(ctx.body());
+        aggregateResult(codeOfBlock, Compiler.block_return());
+        ctx.scope.compiledBlock.bytecode = codeOfBlock.bytes();
         popScope();
         return code;
     }
@@ -288,14 +306,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
 	public Code push(String id) {
 		return null;
-	}
-
-	public Code sendKeywordMsg(ParserRuleContext receiver,
-							   Code receiverCode,
-							   List<SmalltalkParser.BinaryExpressionContext> args,
-							   List<TerminalNode> keywords)
-	{
-        return null;
 	}
 
 	public String getProgramSourceForSubtree(ParserRuleContext ctx) {

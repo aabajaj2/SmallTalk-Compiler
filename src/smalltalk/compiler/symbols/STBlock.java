@@ -2,6 +2,7 @@ package smalltalk.compiler.symbols;
 
 import org.antlr.symtab.MethodSymbol;
 import org.antlr.symtab.Scope;
+import org.antlr.symtab.Symbol;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 /** A block is an anonymous method defined within a method or another block.
@@ -60,7 +61,7 @@ public class STBlock extends MethodSymbol {
 
 	public int nargs() { return this.getNumberOfParameters(); } // fill in
 
-	public int nlocals() { return this.getNumberOfVariables(); } // fill in
+	public int nlocals() { return this.getNumberOfVariables() - this.getNumberOfParameters(); } // fill in
 
 	/** Given the name of a local variable or argument, return the index from 0.
 	 *  The arguments come first and then the locals. For example,
@@ -69,7 +70,8 @@ public class STBlock extends MethodSymbol {
 	 */
 	public int getLocalIndex(String name) {
 		// fill in
-		return 0;
+        Symbol s = resolve(name);
+		return s.getInsertionOrderNumber();
 	}
 
 	/** Look for name in current block; keep looking upwards in

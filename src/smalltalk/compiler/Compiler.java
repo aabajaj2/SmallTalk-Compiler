@@ -153,6 +153,7 @@ public class Compiler {
 	public static Code store_local(short scope, int index ) { return Code.of(Bytecode.STORE_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
 	public static Code block_return() { return Code.of(Bytecode.BLOCK_RETURN); }
 	public static Code push_int(int i) { return Code.of(Bytecode.PUSH_INT).join(intToBytes(i)); }
+	public static Code store_field(int index) { return Code.of(Bytecode.STORE_FIELD).join(shortToBytes(index)); }
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;
@@ -174,5 +175,8 @@ public class Compiler {
 
 	public void error(String msg, Exception e) {
 		errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
+	}
+
+	public Code push_field(int index) { return Code.of(Bytecode.PUSH_FIELD).join(shortToBytes(index));
 	}
 }
