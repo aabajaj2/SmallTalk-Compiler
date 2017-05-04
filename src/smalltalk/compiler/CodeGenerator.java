@@ -98,6 +98,21 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
     @Override
+    public Code visitBop(SmalltalkParser.BopContext ctx) {
+        Code code = defaultResult();
+
+        StringBuilder opchars = new StringBuilder();
+        for(int i = 0; i<ctx.opchar().size(); i++){
+            opchars.append(ctx.opchar(i).getText());
+        }
+        String opchar = opchars.toString();
+        if(opchar.equals("+") || opchar.equals("*") || opchar.equals("/") || opchar.equals("==")) {
+            code = aggregateResult(code, Compiler.send(1, getLiteralIndex(opchars.toString())));
+        }
+        return code;
+    }
+
+    @Override
     public Code visitNamedMethod(SmalltalkParser.NamedMethodContext ctx) {
         Code code = defaultResult();
         currentScope = ctx.scope;
@@ -123,6 +138,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = stCompiledBlock;
         ctx.scope.compiledBlock.bytecode = code.bytes();
         Code codeOfMethod = visit(ctx.methodBlock());
+        aggregateResult(code, visit(ctx.bop()));
         aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
         aggregateResult(codeOfMethod, Compiler.push_self());
         aggregateResult(codeOfMethod, Compiler.method_return());
@@ -152,7 +168,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitPrimitiveMethodBlock(SmalltalkParser.PrimitiveMethodBlockContext ctx) {
         Code code = defaultResult();
         aggregateResult(code, visit(ctx.SYMBOL()));
-        System.out.println("SYmbol from primitive = "+ctx.SYMBOL().getText());
+//        System.out.println("Symbol from primitive = "+ctx.SYMBOL().getText());
         return code;
     }
 
@@ -173,7 +189,13 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitBinaryExpression(SmalltalkParser.BinaryExpressionContext ctx) {
-        Code code = visit(ctx.unaryExpression(0));
+        Code code = defaultResult();
+        for(SmalltalkParser.UnaryExpressionContext e :	 ctx.unaryExpression()){
+            code = aggregateResult(code,visit(e));
+        }
+        for(SmalltalkParser.BopContext e :	 ctx.bop()){
+            code = aggregateResult(code,visit(e));
+        }
         return code;
     }
 
@@ -199,8 +221,28 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             Code c = visit(statContext);
             code = aggregateResult(code, c);
         }
+        if(ctx.localVars()!=null){
+            Code c = visit(ctx.localVars());
+            code = aggregateResult(code, c);
+        }
         return code;
     }
+
+//    @Override
+//    public Code visitLocalVars(SmalltalkParser.LocalVarsContext ctx) {
+//        Code code = defaultResult();
+//        List<Symbol> fields = new ArrayList<>();
+//        for(TerminalNode s : ctx.ID()){
+//             fields.add(currentClassScope.resolve(s.getText()));
+//        }
+//
+//        for(Symbol symbol : fields)
+//            if(symbol instanceof STField) {
+//                System.out.println("fields= "+symbol.getName());
+//                code = aggregateResult(code, compiler.push_field(symbol.getInsertionOrderNumber()));
+//            }
+//        return code;
+//    }
 
     @Override
     public Code visitAssign(SmalltalkParser.AssignContext ctx) {
@@ -224,10 +266,10 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     @Override
     public Code visitId(SmalltalkParser.IdContext ctx) {
         Code code;
-        if(ctx.sym instanceof VariableSymbol) {
+        if(ctx.sym instanceof STField) {
+            code = compiler.push_field(((STField) ctx.sym).getSlotNumber());
+        } else if (ctx.sym instanceof VariableSymbol){
             code = compiler.push_local((short) 0,ctx.sym.getInsertionOrderNumber());
-        } else if (ctx.sym instanceof STField){
-            code = compiler.push_field(ctx.sym.getInsertionOrderNumber());
         } else {
             code = Compiler.push_global(getLiteralIndex(ctx.ID().getText()));
         }
