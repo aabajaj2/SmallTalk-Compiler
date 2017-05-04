@@ -149,7 +149,8 @@ public class Compiler {
 	public static Code push_literal(int lindex) { return Code.of(Bytecode.PUSH_LITERAL).join(toLiteral(lindex)); }
 	public static Code send(int nargs, int lindex) { return Code.of(Bytecode.SEND).join(toLiteral(nargs)).join(toLiteral(lindex)); }
 	public static Code block(int blockDescriptorIndex) { return Code.of(Bytecode.BLOCK).join(toLiteral(blockDescriptorIndex)); }
-	public static Code push_local(short scope, short index ) { return Code.of(Bytecode.PUSH_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
+	public static Code push_local(short scope, int index ) { return Code.of(Bytecode.PUSH_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
+	public static Code store_local(short scope, int index ) { return Code.of(Bytecode.STORE_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
 
 	public static Code dbg(int filenameLitIndex, int line, int charPos) {
 		return null;

@@ -1,5 +1,6 @@
 package smalltalk.compiler.symbols;
 
+import org.antlr.symtab.Scope;
 import org.antlr.symtab.Utils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.misc.ErrorBuffer;
@@ -10,6 +11,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import java.util.List;
 
 /** This object represents the compiled code for a block or method and is
  *  more or less equivalent to the class with same name in VM.
