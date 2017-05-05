@@ -70,7 +70,7 @@ public class STBlock extends MethodSymbol {
 	 */
 	public int getLocalIndex(String name) {
 		// fill in
-        Symbol s = resolve(name);
+		Symbol s = resolve(name);
 		return s.getInsertionOrderNumber();
 	}
 
