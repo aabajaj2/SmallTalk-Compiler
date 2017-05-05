@@ -93,6 +93,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             ctx.scope.compiledBlock.bytecode = code.bytes();
             popScope();
         }
+
         return code;
 	}
 
@@ -105,7 +106,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             opchars.append(ctx.opchar(i).getText());
         }
         String opchar = opchars.toString();
-        if(opchar.equals("+") || opchar.equals("*") || opchar.equals("/") || opchar.equals("==")) {
+        if(opchar.equals("+") || opchar.equals("*") || opchar.equals("/") || opchar.equals("==") || opchar.equals("=") || opchar.equals("~~")) {
             code = aggregateResult(code, Compiler.send(1, getLiteralIndex(opchars.toString())));
         }
         return code;
@@ -158,7 +159,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitPrimitiveMethodBlock(SmalltalkParser.PrimitiveMethodBlockContext ctx) {
         Code code = defaultResult();
         aggregateResult(code, visit(ctx.SYMBOL()));
-//        System.out.println("Symbol from primitive = "+ctx.SYMBOL().getText());
         return code;
     }
 
@@ -172,7 +172,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         for(int i = 0; i<ctx.KEYWORD().size(); i++){
             keywords.append(ctx.KEYWORD(i).getText());
         }
-        code = aggregateResult(code, Compiler.send(ctx.args.size(), getLiteralIndex(keywords.toString())));
+        code = aggregateResult(code, compiler.send(ctx.args.size(), getLiteralIndex(keywords.toString())));
 
         return code;
     }
@@ -186,19 +186,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
                 code = aggregateResult(code, visit(ctx.bop(i-1)));
             }
         }
-//        for(SmalltalkParser.UnaryExpressionContext e :	 ctx.unaryExpression()){
-//            code = aggregateResult(code,visit(e));
-//        }
-//        for(SmalltalkParser.BopContext e :	 ctx.bop()){
-//            code = aggregateResult(code,visit(e));
-//        }
-
         return code;
     }
 
     @Override
     public Code visitUnaryIsPrimary(SmalltalkParser.UnaryIsPrimaryContext ctx) {
         Code code = visit(ctx.primary());
+        return code;
+    }
+
+    @Override
+    public Code visitUnaryMsgSend(SmalltalkParser.UnaryMsgSendContext ctx) {
+        Code code = visit(ctx.unaryExpression());
+        code = aggregateResult(code, compiler.send(0, getLiteralIndex(ctx.ID().getText())));
         return code;
     }
 
@@ -238,21 +238,12 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return code;
     }
 
-//    @Override
-//    public Code visitLocalVars(SmalltalkParser.LocalVarsContext ctx) {
-//        Code code = defaultResult();
-//        List<Symbol> fields = new ArrayList<>();
-//        for(TerminalNode s : ctx.ID()){
-//             fields.add(currentClassScope.resolve(s.getText()));
-//        }
-//
-//        for(Symbol symbol : fields)
-//            if(symbol instanceof STField) {
-//                System.out.println("fields= "+symbol.getName());
-//                code = aggregateResult(code, compiler.push_field(symbol.getInsertionOrderNumber()));
-//            }
-//        return code;
-//    }
+    @Override
+    public Code visitUnarySuperMsgSend(SmalltalkParser.UnarySuperMsgSendContext ctx) {
+        Code code = compiler.push_self();
+        code = aggregateResult(code, compiler.send_super(0, getLiteralIndex(ctx.ID().getText())));
+        return code;
+    }
 
     @Override
     public Code visitAssign(SmalltalkParser.AssignContext ctx) {

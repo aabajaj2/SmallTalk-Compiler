@@ -142,12 +142,11 @@ public class Compiler {
 	public static Code push_self()				{ return Code.of(Bytecode.SELF); }
 	public static Code push_true()				{ return Code.of(Bytecode.TRUE); }
 	public static Code push_false()				{ return Code.of(Bytecode.FALSE); }
-
 	public static Code method_return()          { return Code.of(Bytecode.RETURN); }
-
 	public static Code push_global(int gindex) { return Code.of(Bytecode.PUSH_GLOBAL).join(toLiteral(gindex)); }
 	public static Code push_literal(int lindex) { return Code.of(Bytecode.PUSH_LITERAL).join(toLiteral(lindex)); }
 	public static Code send(int nargs, int lindex) { return Code.of(Bytecode.SEND).join(toLiteral(nargs)).join(toLiteral(lindex)); }
+	public static Code send_super(int nargs, int lindex) { return Code.of(Bytecode.SEND_SUPER).join(toLiteral(nargs)).join(toLiteral(lindex)); }
 	public static Code block(int blockDescriptorIndex) { return Code.of(Bytecode.BLOCK).join(toLiteral(blockDescriptorIndex)); }
 	public static Code push_local(short scope, int index ) { return Code.of(Bytecode.PUSH_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
 	public static Code store_local(short scope, int index ) { return Code.of(Bytecode.STORE_LOCAL).join(shortToBytes(scope)).join(shortToBytes(index)); }
