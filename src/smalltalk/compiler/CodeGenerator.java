@@ -120,9 +120,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = stCompiledBlock;
         ctx.scope.compiledBlock.bytecode = code.bytes();
         Code codeOfMethod = visit(ctx.methodBlock());
-        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
-        aggregateResult(codeOfMethod, Compiler.push_self());
-        aggregateResult(codeOfMethod, Compiler.method_return());
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -138,9 +135,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock.bytecode = code.bytes();
         Code codeOfMethod = visit(ctx.methodBlock());
         aggregateResult(code, visit(ctx.bop()));
-        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
-        aggregateResult(codeOfMethod, Compiler.push_self());
-        aggregateResult(codeOfMethod, Compiler.method_return());
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -155,9 +149,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = stCompiledBlock;
         ctx.scope.compiledBlock.bytecode = code.bytes();
         Code codeOfMethod = visit(ctx.methodBlock());
-        aggregateResult(codeOfMethod, Code.of(Bytecode.POP));
-        aggregateResult(codeOfMethod, Compiler.push_self());
-        aggregateResult(codeOfMethod, Compiler.method_return());
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -188,21 +179,20 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitBinaryExpression(SmalltalkParser.BinaryExpressionContext ctx) {
-        Code code = defaultResult();
-        for(SmalltalkParser.UnaryExpressionContext e :	 ctx.unaryExpression()){
-            code = aggregateResult(code,visit(e));
+        Code code = visit(ctx.unaryExpression(0));
+        if(ctx.unaryExpression().size() > 1){
+            for(int i=1; i<ctx.unaryExpression().size(); i++){
+                code = aggregateResult(code, visit(ctx.unaryExpression(i)));
+                code = aggregateResult(code, visit(ctx.bop(i-1)));
+            }
         }
-        for(SmalltalkParser.BopContext e :	 ctx.bop()){
-            code = aggregateResult(code,visit(e));
-        }
-//
-//        for(int i=0 ; i<ctx.unaryExpression().size(); i++){
-//            code = aggregateResult(code, visit(ctx.unaryExpression(i)));
-//            int j = 0;
-//            if(i > 1 ) {
-//                code = aggregateResult(code, visit(ctx.bop(j)));
-//            }
+//        for(SmalltalkParser.UnaryExpressionContext e :	 ctx.unaryExpression()){
+//            code = aggregateResult(code,visit(e));
 //        }
+//        for(SmalltalkParser.BopContext e :	 ctx.bop()){
+//            code = aggregateResult(code,visit(e));
+//        }
+
         return code;
     }
 
@@ -238,14 +228,13 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             Code c = visit(ctx.localVars());
             code = aggregateResult(code, c);
         }
-//        if(currentScope instanceof STMethod){
-//            if(!currentScope.getName().equals("main")){
-//                aggregateResult(code, Code.of(Bytecode.POP));
-//                aggregateResult(code, Compiler.push_self());
-//                aggregateResult(code, Compiler.method_return());
-//            }
-//        }
-//        code = aggregateResult(code, Code.of(Bytecode.RETURN));
+        if(currentScope instanceof STMethod){
+            if(!currentScope.getName().equals("main")){
+                aggregateResult(code, Code.of(Bytecode.POP));
+                aggregateResult(code, compiler.push_self());
+                aggregateResult(code, compiler.method_return());
+            }
+        }
         return code;
     }
 
@@ -293,7 +282,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         } else if (ctx.sym instanceof VariableSymbol){
             code = compiler.push_local((short) 0,ctx.sym.getInsertionOrderNumber());
         } else {
-            code = Compiler.push_global(getLiteralIndex(ctx.ID().getText()));
+            code = compiler.push_global(getLiteralIndex(ctx.ID().getText()));
         }
         return code;
     }
@@ -310,9 +299,14 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     @Override
     public Code visitEmptyBody(SmalltalkParser.EmptyBodyContext ctx) {
-        Code code = defaultResult();
-        if(currentScope instanceof MethodSymbol) {
-            code = Compiler.push_nil();
+        Code code = visitChildren(ctx);
+        if(currentClassScope != null) {
+            if (currentClassScope.getName().equals("MainClass")) {
+                code = aggregateResult(code, compiler.push_nil());
+            } else {
+                code = aggregateResult(code, Code.of(Bytecode.SELF));
+                code =aggregateResult(code, Code.of(Bytecode.RETURN));
+            }
         }
         return code;
     }
@@ -329,11 +323,11 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         Code code = defaultResult();
         currentScope = ctx.scope;
         STBlock stBlock = (STBlock) currentScope;
-		code = aggregateResult(code, Compiler.block(stBlock.index));
+		code = aggregateResult(code, compiler.block(stBlock.index));
 		STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, stBlock);
 		ctx.scope.compiledBlock = stCompiledBlock;
         Code codeOfBlock = visit(ctx.body());
-        aggregateResult(codeOfBlock, Compiler.block_return());
+        aggregateResult(codeOfBlock, compiler.block_return());
         ctx.scope.compiledBlock.bytecode = codeOfBlock.bytes();
         popScope();
         return code;
@@ -347,19 +341,19 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             stringc = stringc.replace("\'","");
         }
         if(ctx.STRING()!= null) {
-             code = Compiler.push_literal(getLiteralIndex(stringc));
+             code = compiler.push_literal(getLiteralIndex(stringc));
         } else if(ctx.getText().equals("true")){
-            code = Compiler.push_true();
+            code = compiler.push_true();
         } else if(ctx.getText().equals("self")){
-            code = Compiler.push_self();
+            code = compiler.push_self();
         } else if(ctx.getText().equals("false")){
-            code = Compiler.push_false();
+            code = compiler.push_false();
         } else if (ctx.getText().equals("nil")){
-            code = Compiler.push_nil();
+            code = compiler.push_nil();
         }
 
         if(ctx.NUMBER() != null ){
-            code = Compiler.push_int(Integer.parseInt(ctx.NUMBER().getText()));
+            code = compiler.push_int(Integer.parseInt(ctx.NUMBER().getText()));
         }
         return code;
     }

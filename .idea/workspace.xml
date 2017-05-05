@@ -4,7 +4,6 @@
     <list default="true" id="72c1e378-0d70-41f1-b5d5-889375831c71" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java" afterPath="$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smalltalk/compiler/symbols/STBlock.java" afterPath="$PROJECT_DIR$/src/smalltalk/compiler/symbols/STBlock.java" />
     </list>
     <ignored path="smalltalk-compiler-aabajaj2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,8 +37,8 @@
       <file leaf-file-name="Smalltalk.g4" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grammars/smalltalk/compiler/Smalltalk.g4">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
-              <caret line="63" column="81" selection-start-line="63" selection-start-column="70" selection-end-line="63" selection-end-column="81" />
+            <state relative-caret-position="1071">
+              <caret line="68" column="45" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -68,11 +67,11 @@
       <file leaf-file-name="CodeGenerator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2501">
-              <caret line="230" column="40" selection-start-line="230" selection-start-column="40" selection-end-line="230" selection-end-column="40" />
+            <state relative-caret-position="358">
+              <caret line="150" column="53" selection-start-line="150" selection-start-column="53" selection-end-line="150" selection-end-column="53" />
               <folding>
-                <element signature="e#13101#13102#0" expanded="true" />
-                <element signature="e#13154#13155#0" expanded="true" />
+                <element signature="e#12736#12737#0" expanded="true" />
+                <element signature="e#12789#12790#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -111,29 +110,10 @@
       <file leaf-file-name="Compiler.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/Compiler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2261">
-              <caret line="179" column="72" selection-start-line="179" selection-start-column="72" selection-end-line="179" selection-end-column="72" />
+            <state relative-caret-position="186">
+              <caret line="141" column="79" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="79" />
               <folding>
-                <element signature="e#1422#1423#0" expanded="false" />
-                <element signature="e#1457#1458#0" expanded="false" />
-                <element signature="e#1499#1500#0" expanded="false" />
-                <element signature="e#1526#1527#0" expanded="false" />
-                <element signature="e#4187#4188#0" expanded="false" />
-                <element signature="e#4244#4245#0" expanded="false" />
-                <element signature="e#4309#4310#0" expanded="false" />
-                <element signature="e#4364#4365#0" expanded="false" />
-                <element signature="e#4426#4427#0" expanded="false" />
-                <element signature="e#4486#4487#0" expanded="false" />
-                <element signature="e#6024#6025#0" expanded="false" />
-                <element signature="e#6042#6043#0" expanded="false" />
-                <element signature="e#6074#6075#0" expanded="false" />
-                <element signature="e#6096#6097#0" expanded="false" />
-                <element signature="e#6141#6142#0" expanded="false" />
-                <element signature="e#6172#6173#0" expanded="false" />
-                <element signature="e#6225#6226#0" expanded="false" />
-                <element signature="e#6247#6248#0" expanded="false" />
-                <element signature="e#6294#6295#0" expanded="false" />
-                <element signature="e#6357#6358#0" expanded="false" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -754,9 +734,9 @@
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="JUnit.TestCodeGen" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.TestCodeGen (4)" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.TestCodeGen (1)" />
         <item index="2" class="java.lang.String" itemvalue="JUnit.TestCodeGen (3)" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.TestCodeGen (1)" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.TestCodeGen (4)" />
         <item index="4" class="java.lang.String" itemvalue="JUnit.TestCodeGen (5)" />
       </list>
     </recent_temporary>
@@ -852,39 +832,46 @@
       <option name="project" value="LOCAL" />
       <updated>1493890768052</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Added pop self return logic">
+      <created>1493952915954</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1493952915954</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestCodeGen - 2017.05.04 at 19h 38m 50s.xml">
+    <history-entry file="TestCodeGen - 2017.05.04 at 20h 40m 47s.xml">
       <configuration name="TestCodeGen" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen - 2017.05.04 at 19h 39m 32s.xml">
+    <history-entry file="TestCodeGen - 2017.05.04 at 20h 51m 39s.xml">
       <configuration name="TestCodeGen" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen - 2017.05.04 at 19h 44m 55s.xml">
+    <history-entry file="TestCodeGen - 2017.05.04 at 20h 53m 53s.xml">
       <configuration name="TestCodeGen" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen - 2017.05.04 at 19h 51m 12s.xml">
-      <configuration name="TestCodeGen" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 32m 45s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 39m 37s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 33m 29s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 42m 04s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 37m 44s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 42m 12s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 38m 15s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 43m 11s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 39m 00s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 44m 43s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 39m 59s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="TestCodeGen_(4) - 2017.05.04 at 19h 44m 48s.xml">
-      <configuration name="TestCodeGen (4)" configurationId="JUnit" />
+    <history-entry file="TestCodeGen_(1) - 2017.05.04 at 20h 40m 23s.xml">
+      <configuration name="TestCodeGen (1)" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -914,7 +901,8 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17700455" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.58487654" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" x="1" y="31" width="1354" height="733" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31635803" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" x="1" y="31" width="1354" height="733" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -925,7 +913,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -979,19 +966,20 @@
     <MESSAGE value="Added code for methods" />
     <MESSAGE value="Added code for OperatorMethod and KeywordMethod" />
     <MESSAGE value="Added operators and primitive methods" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added operators and primitive methods" />
+    <MESSAGE value="Added pop self return logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added pop self return logic" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java</url>
-          <line>314</line>
+          <line>62</line>
           <properties />
-          <option name="timeStamp" value="51" />
+          <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="53" />
+      <option name="time" value="61" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1294,35 +1282,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/Compiler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2261">
-          <caret line="179" column="72" selection-start-line="179" selection-start-column="72" selection-end-line="179" selection-end-column="72" />
-          <folding>
-            <element signature="e#1422#1423#0" expanded="false" />
-            <element signature="e#1457#1458#0" expanded="false" />
-            <element signature="e#1499#1500#0" expanded="false" />
-            <element signature="e#1526#1527#0" expanded="false" />
-            <element signature="e#4187#4188#0" expanded="false" />
-            <element signature="e#4244#4245#0" expanded="false" />
-            <element signature="e#4309#4310#0" expanded="false" />
-            <element signature="e#4364#4365#0" expanded="false" />
-            <element signature="e#4426#4427#0" expanded="false" />
-            <element signature="e#4486#4487#0" expanded="false" />
-            <element signature="e#6024#6025#0" expanded="false" />
-            <element signature="e#6042#6043#0" expanded="false" />
-            <element signature="e#6074#6075#0" expanded="false" />
-            <element signature="e#6096#6097#0" expanded="false" />
-            <element signature="e#6141#6142#0" expanded="false" />
-            <element signature="e#6172#6173#0" expanded="false" />
-            <element signature="e#6225#6226#0" expanded="false" />
-            <element signature="e#6247#6248#0" expanded="false" />
-            <element signature="e#6294#6295#0" expanded="false" />
-            <element signature="e#6357#6358#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/symbols/STClass.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1361,14 +1320,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grammars/smalltalk/compiler/Smalltalk.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
-          <caret line="63" column="81" selection-start-line="63" selection-start-column="70" selection-end-line="63" selection-end-column="81" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/samples/CodeGen/InheritFieldAndHaveField.st">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1385,6 +1336,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/Compiler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="141" column="79" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="79" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/Code.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -1393,13 +1354,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/grammars/smalltalk/compiler/Smalltalk.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1071">
+          <caret line="68" column="45" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2501">
-          <caret line="230" column="40" selection-start-line="230" selection-start-column="40" selection-end-line="230" selection-end-column="40" />
+        <state relative-caret-position="358">
+          <caret line="150" column="53" selection-start-line="150" selection-start-column="53" selection-end-line="150" selection-end-column="53" />
           <folding>
-            <element signature="e#13101#13102#0" expanded="true" />
-            <element signature="e#13154#13155#0" expanded="true" />
+            <element signature="e#12736#12737#0" expanded="true" />
+            <element signature="e#12789#12790#0" expanded="true" />
           </folding>
         </state>
       </provider>
