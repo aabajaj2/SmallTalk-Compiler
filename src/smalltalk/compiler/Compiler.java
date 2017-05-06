@@ -103,9 +103,7 @@ public class Compiler {
 	                                               String primitiveName,
 	                                               SmalltalkParser.MethodContext tree)
 	{
-//		System.out.println("	create primitive "+selector+" "+args+"->"+primitiveName);
-		// convert "<classname>_<methodname>" Primitive value
-		// warn if classname!=currentClass
+
 		return new STPrimitiveMethod(selector,tree, primitiveName);
 	}
 
@@ -162,18 +160,10 @@ public class Compiler {
 		return fileName;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-
 	// Error support
 
 	public void error(String msg) {
 		errors.add(msg);
-	}
-
-	public void error(String msg, Exception e) {
-		errors.add(msg+"\n"+ Arrays.toString(e.getStackTrace()));
 	}
 
 	public Code push_field(int index) { return Code.of(Bytecode.PUSH_FIELD).join(shortToBytes(index));
