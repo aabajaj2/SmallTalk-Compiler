@@ -69,7 +69,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 	}
 
     @Override
-	public Code visitMain(SmalltalkParser.MainContext ctx) {
+    public Code visitMain(SmalltalkParser.MainContext ctx) {
         currentScope = ctx.scope;
         currentClassScope = ctx.classScope;
         pushScope(ctx.scope);
@@ -81,33 +81,52 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             int i = 0;
             List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
             stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
+
             for (Scope b : blocks) {
-                STCompiledBlock stCompiledBlock1 = new STCompiledBlock(ctx.classScope, (STBlock) b);
-                stCompiledBlock.blocks[i] = stCompiledBlock1;
-                stCompiledBlock.blocks[i].bytecode = ((STBlock) b).compiledBlock.bytecode;
+                stCompiledBlock.blocks[i] = ((STBlock)b).compiledBlock;
                 i++;
             }
+
             code = aggregateResult(code, Code.of(Bytecode.POP));
             code = aggregateResult(code, Code.of(Bytecode.SELF));
             code = aggregateResult(code, Code.of(Bytecode.RETURN));
+
             ctx.scope.compiledBlock.bytecode = code.bytes();
             popScope();
         }
-
         return code;
 	}
 
-    @Override
-    public Code visitBop(SmalltalkParser.BopContext ctx) {
-        Code code = defaultResult();
+    /**
+     All expressions have values. Must pop each expression value off, except
+     last one, which is the block return value. Visit method for blocks will
+     issue block_return instruction. Visit method for method will issue
+     pop self return.  If last expression is ^expr, the block_return or
+     pop self return is dead code but it is always there as a failsafe.
 
-        StringBuilder opchars = new StringBuilder();
-        for(int i = 0; i<ctx.opchar().size(); i++){
-            opchars.append(ctx.opchar(i).getText());
+     localVars? expr ('.' expr)* '.'?
+     */
+    @Override
+    public Code visitFullBody(SmalltalkParser.FullBodyContext ctx) {
+        Code code = defaultResult();
+        int sStat = ctx.stat().size();
+        int i=0;
+
+        for (SmalltalkParser.StatContext statContext : ctx.stat()) {
+            i++;
+            Code c = visit(statContext);
+            code = aggregateResult(code, c);
+            if(i != sStat){
+                code = aggregateResult(code, Code.of(Bytecode.POP));
+            }
         }
-        String opchar = opchars.toString();
-        if(opchar.equals("+") || opchar.equals("*") || opchar.equals("/") || opchar.equals("==") || opchar.equals("=") || opchar.equals("~~")) {
-            code = aggregateResult(code, Compiler.send(1, getLiteralIndex(opchars.toString())));
+
+        if(currentScope instanceof STMethod){
+            if(!currentScope.getName().equals("main")){
+                aggregateResult(code, Code.of(Bytecode.POP));
+                aggregateResult(code, compiler.push_self());
+                aggregateResult(code, compiler.method_return());
+            }
         }
         return code;
     }
@@ -119,23 +138,18 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         pushScope(ctx.scope);
         STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
         ctx.scope.compiledBlock = stCompiledBlock;
-        ctx.scope.compiledBlock.bytecode = code.bytes();
-        Code codeOfMethod = visit(ctx.methodBlock());
-        ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
-        popScope();
-        return code;
-    }
 
-    @Override
-    public Code visitOperatorMethod(SmalltalkParser.OperatorMethodContext ctx) {
-        Code code = defaultResult();
-        currentScope = ctx.scope;
-        pushScope(ctx.scope);
-        STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
-        ctx.scope.compiledBlock = stCompiledBlock;
-        ctx.scope.compiledBlock.bytecode = code.bytes();
         Code codeOfMethod = visit(ctx.methodBlock());
-        aggregateResult(code, visit(ctx.bop()));
+
+        int i=0;
+        List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
+        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
+        for (Scope b : blocks) {
+            System.out.println("Named method = "+b.getName());
+            stCompiledBlock.blocks[i] = ((STBlock)b).compiledBlock;
+            i++;
+        }
+
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -148,17 +162,34 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         pushScope(ctx.scope);
         STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
         ctx.scope.compiledBlock = stCompiledBlock;
-        ctx.scope.compiledBlock.bytecode = code.bytes();
+
         Code codeOfMethod = visit(ctx.methodBlock());
+
+        int i=0;
+        List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
+        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
+        for (Scope b : blocks) {
+            System.out.println("Keyword method = "+b.getName());
+            stCompiledBlock.blocks[i] = ((STBlock)b).compiledBlock;
+            i++;
+        }
+
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
     }
 
     @Override
-    public Code visitPrimitiveMethodBlock(SmalltalkParser.PrimitiveMethodBlockContext ctx) {
+    public Code visitOperatorMethod(SmalltalkParser.OperatorMethodContext ctx) {
         Code code = defaultResult();
-        aggregateResult(code, visit(ctx.SYMBOL()));
+        currentScope = ctx.scope;
+        pushScope(ctx.scope);
+        STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
+        ctx.scope.compiledBlock = stCompiledBlock;
+        Code codeOfMethod = visit(ctx.methodBlock());
+        code = aggregateResult(code, visit(ctx.bop()));
+        ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
+        popScope();
         return code;
     }
 
@@ -190,50 +221,23 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     }
 
     @Override
-    public Code visitUnaryIsPrimary(SmalltalkParser.UnaryIsPrimaryContext ctx) {
-        Code code = visit(ctx.primary());
-        return code;
-    }
-
-    @Override
     public Code visitUnaryMsgSend(SmalltalkParser.UnaryMsgSendContext ctx) {
         Code code = visit(ctx.unaryExpression());
         code = aggregateResult(code, compiler.send(0, getLiteralIndex(ctx.ID().getText())));
         return code;
     }
 
-    /**
-     All expressions have values. Must pop each expression value off, except
-     last one, which is the block return value. Visit method for blocks will
-     issue block_return instruction. Visit method for method will issue
-     pop self return.  If last expression is ^expr, the block_return or
-     pop self return is dead code but it is always there as a failsafe.
-
-     localVars? expr ('.' expr)* '.'?
-     */
     @Override
-    public Code visitFullBody(SmalltalkParser.FullBodyContext ctx) {
+    public Code visitBop(SmalltalkParser.BopContext ctx) {
         Code code = defaultResult();
-        int sStat = ctx.stat().size();
-        int i=0;
-        for (SmalltalkParser.StatContext statContext : ctx.stat()) {
-            i++;
-            Code c = visit(statContext);
-            code = aggregateResult(code, c);
-            if(i != sStat){
-                aggregateResult(code, Code.of(Bytecode.POP));
-            }
+
+        StringBuilder opchars = new StringBuilder();
+        for(int i = 0; i<ctx.opchar().size(); i++){
+            opchars.append(ctx.opchar(i).getText());
         }
-        if(ctx.localVars()!=null){
-            Code c = visit(ctx.localVars());
-            code = aggregateResult(code, c);
-        }
-        if(currentScope instanceof STMethod){
-            if(!currentScope.getName().equals("main")){
-                aggregateResult(code, Code.of(Bytecode.POP));
-                aggregateResult(code, compiler.push_self());
-                aggregateResult(code, compiler.method_return());
-            }
+        String opchar = opchars.toString();
+        if(opchar.equals("+") || opchar.equals("*") || opchar.equals("/") || opchar.equals("==") || opchar.equals("=") || opchar.equals("~~")) {
+            code = aggregateResult(code, Compiler.send(1, getLiteralIndex(opchars.toString())));
         }
         return code;
     }
@@ -248,8 +252,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     @Override
     public Code visitAssign(SmalltalkParser.AssignContext ctx) {
         Code code = visit(ctx.messageExpression());
-        aggregateResult(code, visit(ctx.lvalue()));
-
+        code = aggregateResult(code, visit(ctx.lvalue()));
         return code;
     }
 
@@ -302,23 +305,15 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         return code;
     }
 
-//    @Override
-//    public Code visitSmalltalkMethodBlock(SmalltalkParser.SmalltalkMethodBlockContext ctx) {
-//        Code code = defaultResult();
-//        Compiler.method_return();
-//        return code;
-//    }
-
     @Override
     public Code visitBlock(SmalltalkParser.BlockContext ctx) {
         Code code = defaultResult();
         currentScope = ctx.scope;
         STBlock stBlock = (STBlock) currentScope;
 		code = aggregateResult(code, compiler.block(stBlock.index));
-		STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, stBlock);
-		ctx.scope.compiledBlock = stCompiledBlock;
-        Code codeOfBlock = visit(ctx.body());
-        aggregateResult(codeOfBlock, compiler.block_return());
+        Code codeOfBlock = visitChildren(ctx);
+        ctx.scope.compiledBlock = new STCompiledBlock(currentClassScope, stBlock);
+        codeOfBlock = aggregateResult(codeOfBlock, compiler.block_return());
         ctx.scope.compiledBlock.bytecode = codeOfBlock.bytes();
         popScope();
         return code;
@@ -347,11 +342,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
             code = compiler.push_int(Integer.parseInt(ctx.NUMBER().getText()));
         }
         return code;
-    }
-
-    @Override
-    public Code visitSendMessage(SmalltalkParser.SendMessageContext ctx) {
-        return visit(ctx.messageExpression());
     }
 
     public STCompiledBlock getCompiledPrimitive(STPrimitiveMethod primitive) {
