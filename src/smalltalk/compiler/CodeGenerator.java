@@ -123,9 +123,9 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
         if(currentScope instanceof STMethod){
             if(!currentScope.getName().equals("main")){
-                aggregateResult(code, Code.of(Bytecode.POP));
-                aggregateResult(code, compiler.push_self());
-                aggregateResult(code, compiler.method_return());
+                code = aggregateResult(code, Code.of(Bytecode.POP));
+                code = aggregateResult(code, compiler.push_self());
+                code = aggregateResult(code, compiler.method_return());
             }
         }
         return code;
@@ -135,45 +135,33 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitNamedMethod(SmalltalkParser.NamedMethodContext ctx) {
         Code code = defaultResult();
         currentScope = ctx.scope;
+        Code codeOfMethod = visit(ctx.methodBlock());
         pushScope(ctx.scope);
         STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
         ctx.scope.compiledBlock = stCompiledBlock;
-
-        Code codeOfMethod = visit(ctx.methodBlock());
-
-        int i=0;
-        List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
+        List<Scope> blocks = ((STMethod)currentScope).getAllNestedScopedSymbols();
         stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for (Scope b : blocks) {
-            System.out.println("Named method = "+b.getName());
-            stCompiledBlock.blocks[i] = ((STBlock)b).compiledBlock;
-            i++;
+        for(int i=0; i<blocks.size(); i++) {
+            stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
         }
-
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
     }
 
-    @Override
+        @Override
     public Code visitKeywordMethod(SmalltalkParser.KeywordMethodContext ctx) {
         Code code = defaultResult();
         currentScope = ctx.scope;
         pushScope(ctx.scope);
         STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
         ctx.scope.compiledBlock = stCompiledBlock;
-
         Code codeOfMethod = visit(ctx.methodBlock());
-
-        int i=0;
-        List<Scope> blocks = ctx.scope.getNestedScopedSymbols();
+        List<Scope> blocks = ((STMethod)currentScope).getAllNestedScopedSymbols();
         stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for (Scope b : blocks) {
-            System.out.println("Keyword method = "+b.getName());
-            stCompiledBlock.blocks[i] = ((STBlock)b).compiledBlock;
-            i++;
+        for(int i=0; i<blocks.size(); i++) {
+            stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
         }
-
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -197,7 +185,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitKeywordSend(SmalltalkParser.KeywordSendContext ctx) {
         Code code = visit(ctx.recv);
         for(SmalltalkParser.BinaryExpressionContext e :	 ctx.args){
-            code = aggregateResult(code,visit(e));
+            code = aggregateResult(code, visit(e));
         }
         StringBuilder keywords = new StringBuilder();
         for(int i = 0; i<ctx.KEYWORD().size(); i++){
