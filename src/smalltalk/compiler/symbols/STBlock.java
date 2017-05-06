@@ -79,8 +79,16 @@ public class STBlock extends MethodSymbol {
 	 *  jump to find name. 0 indicates same scope.
 	 */
 	public int getRelativeScopeCount(String name) {
-
-		// fill in
-		return 0;
+		int scopeCount = 0;
+		Scope s = this;
+		while (!s.getName().equals(name)){
+			s = s.getEnclosingScope();
+			if(s != null){
+				scopeCount++;
+			}else {
+				return -1;
+			}
+		}
+		return scopeCount;
 	}
 }

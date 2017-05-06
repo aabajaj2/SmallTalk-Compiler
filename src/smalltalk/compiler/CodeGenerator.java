@@ -262,7 +262,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         if(ctx.sym instanceof STField) {
             code = compiler.store_field(ctx.sym.getInsertionOrderNumber());
         } else {
-            code = compiler.store_local((short) 0,ctx.sym.getInsertionOrderNumber());
+            code = compiler.store_local((short) ((STBlock)currentScope).getRelativeScopeCount(ctx.sym.getScope().getName()),ctx.sym.getInsertionOrderNumber());
         }
 
         return code;
@@ -274,7 +274,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         if(ctx.sym instanceof STField) {
             code = compiler.push_field(fieldindex(ctx.sym));
         } else if (ctx.sym instanceof VariableSymbol){
-            code = compiler.push_local((short) 0,ctx.sym.getInsertionOrderNumber());
+            code = compiler.push_local((short) ((STBlock)currentScope).getRelativeScopeCount(ctx.sym.getScope().getName()),ctx.sym.getInsertionOrderNumber());
         } else {
             code = compiler.push_global(getLiteralIndex(ctx.ID().getText()));
         }
@@ -311,7 +311,8 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         currentScope = ctx.scope;
         STBlock stBlock = (STBlock) currentScope;
 		code = aggregateResult(code, compiler.block(stBlock.index));
-        Code codeOfBlock = visitChildren(ctx);
+        Code codeOfBlock = visit(ctx.body());
+        System.out.println("Blocks from visitBlock = "+ stBlock.getName());
         ctx.scope.compiledBlock = new STCompiledBlock(currentClassScope, stBlock);
         codeOfBlock = aggregateResult(codeOfBlock, compiler.block_return());
         ctx.scope.compiledBlock.bytecode = codeOfBlock.bytes();
