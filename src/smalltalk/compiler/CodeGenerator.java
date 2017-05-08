@@ -152,7 +152,6 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
 
     private void addStCompiledBlock(STCompiledBlock stCompiledBlock, List<Scope> blocks) {
         stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        System.out.println("Size of the blocks list = "+blocks.size());
         for(int i=0; i<blocks.size(); i++) {
             stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
         }

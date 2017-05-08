@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="72c1e378-0d70-41f1-b5d5-889375831c71" name="Default" comment="Final Commit">
+    <list default="true" id="72c1e378-0d70-41f1-b5d5-889375831c71" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java" afterPath="$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/smalltalk/compiler/symbols/STBlock.java" afterPath="$PROJECT_DIR$/src/smalltalk/compiler/symbols/STBlock.java" />
     </list>
     <ignored path="smalltalk-compiler-aabajaj2.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -60,8 +59,8 @@
       <file leaf-file-name="CodeGenerator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2686">
-              <caret line="160" column="13" selection-start-line="160" selection-start-column="13" selection-end-line="160" selection-end-column="13" />
+            <state relative-caret-position="222">
+              <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#685#686#0" expanded="true" />
@@ -1051,7 +1050,14 @@
       <option name="project" value="LOCAL" />
       <updated>1494045937565</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Final Commit">
+      <created>1494213587352</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1494213587352</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1773,8 +1779,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/smalltalk/compiler/CodeGenerator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2686">
-          <caret line="160" column="13" selection-start-line="160" selection-start-column="13" selection-end-line="160" selection-end-column="13" />
+        <state relative-caret-position="222">
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="154" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#685#686#0" expanded="true" />
