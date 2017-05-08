@@ -129,10 +129,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         STCompiledBlock stCompiledBlock = new STCompiledBlock(currentClassScope, (STMethod) currentScope);
         ctx.scope.compiledBlock = stCompiledBlock;
         List<Scope> blocks = ((STMethod)currentScope).getAllNestedScopedSymbols();
-        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for(int i=0; i<blocks.size(); i++) {
-            stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
-        }
+        addStCompiledBlock(stCompiledBlock, blocks);
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
@@ -147,13 +144,18 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
         ctx.scope.compiledBlock = stCompiledBlock;
         Code codeOfMethod = visit(ctx.methodBlock());
         List<Scope> blocks = ((STMethod)currentScope).getAllNestedScopedSymbols();
-        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
-        for(int i=0; i<blocks.size(); i++) {
-            stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
-        }
+        addStCompiledBlock(stCompiledBlock, blocks);
         ctx.scope.compiledBlock.bytecode = codeOfMethod.bytes();
         popScope();
         return code;
+    }
+
+    private void addStCompiledBlock(STCompiledBlock stCompiledBlock, List<Scope> blocks) {
+        stCompiledBlock.blocks = new STCompiledBlock[blocks.size()];
+        System.out.println("Size of the blocks list = "+blocks.size());
+        for(int i=0; i<blocks.size(); i++) {
+            stCompiledBlock.blocks[i] = ((STBlock)blocks.get(i)).compiledBlock;
+        }
     }
 
     @Override
@@ -283,6 +285,7 @@ public class CodeGenerator extends SmalltalkBaseVisitor<Code> {
     public Code visitBlock(SmalltalkParser.BlockContext ctx) {
         Code code = defaultResult();
         currentScope = ctx.scope;
+        pushScope(ctx.scope);
         STBlock stBlock = (STBlock) currentScope;
         code = aggregateResult(code, compiler.block(stBlock.index));
         Code codeOfBlock = visit(ctx.body());

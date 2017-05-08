@@ -69,7 +69,6 @@ public class STBlock extends MethodSymbol {
 	 *  has  indexes x@0, y@1, a@x.
 	 */
 	public int getLocalIndex(String name) {
-		// fill in
 		Symbol s = resolve(name);
 		return s.getInsertionOrderNumber();
 	}
