@@ -1,5 +1,5 @@
 # Smalltalk-Compiler
-Built a full compiler for a subset of Smalltalk using ANTLR and JAVA. 
+Built a full compiler for a subset of Smalltalk using ANTLR and JAVA.
 Example:
 
 SmallTalk Code 
