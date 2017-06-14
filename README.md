@@ -2,7 +2,7 @@
 Built a full compiler for a subset of Smalltalk using ANTLR and JAVA.
 Example:
 
-SmallTalk Code 
+SmallTalk code 
 ```
 Transcript show: 'hello'.
 ```
